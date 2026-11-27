@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AcessRun Corrida Inclusiva</title>
+<meta name="description" content="AcessRun: registre treinos em cadeira de rodas, handbike, com prótese ou com guia, encontre rotas acessíveis e provas com categoria PCD.">
+<meta name="theme-color" content="#0A5ADC">
+<link rel="icon" href="assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Exo+2:ital,wght@1,700;1,800;1,900&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<script src="js/firebase-config.js"></script>
+</head>
+<body>
+<a class="skip" href="#conteudo">Pular para o conteúdo</a>
+
+<svg width="0" height="0" class="sr" aria-hidden="true" focusable="false">
+  <symbol id="i-cadeira" viewBox="0 0 48 48"><circle cx="27" cy="7" r="4.5" fill="currentColor"/><path d="M25 14l-3 13h12l4 11M22 27a11 11 0 1 0 9 14M24 18l9 3" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-handbike" viewBox="0 0 48 48"><circle cx="11" cy="35" r="8" fill="none" stroke="currentColor" stroke-width="4"/><circle cx="41" cy="38" r="4" fill="none" stroke="currentColor" stroke-width="3.5"/><circle cx="22" cy="12" r="4.5" fill="currentColor"/><path d="M20 18l-3 13h14l8-9M24 21l9-3M11 35l20-4" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-protese" viewBox="0 0 48 48"><circle cx="28" cy="6" r="4.5" fill="currentColor"/><path d="M26 13l-5 13 9 6-2 11M21 26l-7 6M26 13l9 6 6-3M26 13l-9 3-4 7" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/><path d="M14 32c-4 5-4 9 2 10" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></symbol>
+  <symbol id="i-guia" viewBox="0 0 48 48"><circle cx="14" cy="7" r="4" fill="currentColor"/><circle cx="34" cy="7" r="4" fill="currentColor"/><path d="M13 13l-3 12 6 5-1 11M10 25l-5 6M34 13l-3 12 6 5-1 11M31 25l-5 6M16 18l8 4 8-4" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-adaptada" viewBox="0 0 48 48"><circle cx="25" cy="6" r="4.5" fill="currentColor"/><path d="M24 13l-2 14 6 6v10M22 27l-6 14M24 15l8 7M24 15l-8 6" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-som" viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-palmas" viewBox="0 0 24 24"><path d="M7 13l5-8M10 14l5-8M13 15l4-7M6 12c-2 4 0 8 4 9s8-1 9-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#inicio" aria-label="AcessRun, página inicial"><img src="assets/logo-branco.png" alt="" width="104" height="78"></a>
+    <nav class="nav scroll" aria-label="Principal">
+      <a href="#registrar">Registrar</a><a href="#rotas">Rotas</a><a href="#provas">Provas</a><a href="#guias">Guias</a><a href="#comunidade">Comunidade</a><a href="#acessibilidade">Acessibilidade</a>
+    </nav>
+    <button class="a11y-btn" id="a11yBtn" type="button" aria-expanded="false" aria-controls="a11yPanel" title="Atalho: Alt + A">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="4" r="2.4" fill="currentColor"/><path d="M4 8.5l8 1.5 8-1.5M12 10v5l-4 6M12 15l4 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span>Acessibilidade</span>
+    </button>
+  </div>
+</header>
+
+<aside class="a11y" id="a11yPanel" hidden aria-labelledby="a11yTitle">
+  <div class="a11y-head">
+    <h2 id="a11yTitle">Ajustes de acessibilidade</h2>
+    <button class="x" id="a11yClose" type="button" aria-label="Fechar ajustes">×</button>
+  </div>
+  <div class="opt">
+    <span class="opt-l" id="fsLabel">Tamanho do texto</span>
+    <div class="seg" role="group" aria-labelledby="fsLabel">
+      <button type="button" data-fs="1" aria-pressed="true">A</button><button type="button" data-fs="1.15" aria-pressed="false">A+</button><button type="button" data-fs="1.3" aria-pressed="false">A++</button><button type="button" data-fs="1.5" aria-pressed="false">A+++</button>
+    </div>
+  </div>
+  <label class="sw"><input type="checkbox" id="optContrast"><span>Alto contraste</span></label>
+  <label class="sw"><input type="checkbox" id="optDys"><span>Leitura facilitada (mais espaço entre letras e linhas)</span></label>
+  <label class="sw"><input type="checkbox" id="optMotion"><span>Reduzir animações</span></label>
+  <label class="sw"><input type="checkbox" id="optLinks"><span>Destacar links e foco do teclado</span></label>
+  <label class="sw"><input type="checkbox" id="optCursor"><span>Cursor grande</span></label>
+  <label class="sw"><input type="checkbox" id="optRuler"><span>Régua de leitura</span></label>
+  <div class="opt">
+    <span class="opt-l">Leitura em voz alta</span>
+    <div class="btns"><button type="button" class="mini" id="readSel">Ler texto selecionado</button><button type="button" class="mini" id="readStop">Parar</button></div>
+    <label for="rate" class="small">Velocidade da voz</label>
+    <input type="range" id="rate" min="0.7" max="1.5" step="0.1" value="1">
+  </div>
+  <div class="opt">
+    <span class="opt-l">Libras</span>
+    <button type="button" class="mini" id="libras">Ativar tradutor VLibras</button>
+    <p class="small" id="librasMsg" aria-live="polite">Tradutor oficial do governo federal para a Língua Brasileira de Sinais.</p>
+  </div>
+  <div class="opt">
+    <span class="opt-l">Comandos de voz</span>
+    <button type="button" class="mini" id="voiceCmd" aria-pressed="false">Ativar comandos de voz</button>
+    <p class="small" id="voiceMsg" aria-live="polite">Diga “registrar”, “rotas”, “provas”, “guias”, “contraste” ou “ler”.</p>
+  </div>
+  <button type="button" class="mini ghost" id="a11yReset">Restaurar padrão</button>
+</aside>
+
+<div class="ruler" id="ruler" hidden></div>
+
+<main id="conteudo" tabindex="-1">
+
+<section class="hero" id="inicio" aria-labelledby="heroTitle">
+  <div class="hero-in">
+    <div class="hero-copy">
+      <h1 id="heroTitle">Corrida para todos os corpos.</h1>
+      <p class="lead">Registre treinos em cadeira de rodas, handbike, com prótese ou com guia. Encontre rotas acessíveis, provas com categoria PCD e gente para correr junto.</p>
+      <div class="cta">
+        <a class="btn yel" href="#registrar">Registrar atividade</a>
+        <a class="btn line" href="#rotas">Encontrar rota acessível</a>
+      </div>
+    </div>
+    <ul class="facts">
+      <li><b>18,6 mi</b><span>brasileiros têm alguma deficiência</span></li>
+      <li><b>1 em 11</b><span>pessoas no país</span></li>
+      <li><b>19 mi</b><span>corredores brasileiros no Strava</span></li>
+    </ul>
+  </div>
+  <figure class="hero-art">
+    <img src="assets/hero.png" width="1800" height="620" alt="Ilustração: um atleta e uma atleta em cadeira de rodas, um corredor com prótese de lâmina e uma corredora cega ligada ao seu guia por uma cordinha, correndo juntos.">
+  </figure>
+  <p class="src hero-src">Fontes: IBGE, PNAD Contínua 2022 · Strava 2024, via Bem Paraná.</p>
+</section>
+
+<section class="band" id="registrar" aria-labelledby="regTitle">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><h2 id="regTitle">Registrar atividade</h2><p>Escolha a sua modalidade. Ritmo e velocidade aparecem na hora, e o treino entra no feed da comunidade.</p></div>
+      <button class="read" type="button" data-read="#registrar"><svg aria-hidden="true"><use href="#i-som"/></svg>Ouvir esta seção</button>
+    </div>
+    <div class="reg">
+      <div class="result" id="result">
+        <p class="res-mod"><svg aria-hidden="true"><use id="resIcon" href="#i-cadeira"/></svg><span id="resMod">Corrida em cadeira de rodas</span></p>
+        <p class="res-big"><b id="resPace">4:39</b><span>min por km</span></p>
+        <div class="res-row">
+          <p><b id="resSpeed">12,9</b><span>km/h</span></p>
+          <p><b id="resDist">5,2</b><span>km</span></p>
+          <p><b id="resTime">24:10</b><span>tempo</span></p>
+        </div>
+        <svg class="res-route" viewBox="0 0 300 90" aria-hidden="true" preserveAspectRatio="none"><path id="resPath" d="M8 70 C 50 70, 60 30, 100 34 S 160 76, 200 52 S 260 14, 292 20" fill="none" stroke="#FFD23F" stroke-width="7" stroke-linecap="round"/></svg>
+        <p class="res-note" id="resNote" aria-live="polite">Pronto para registrar.</p>
+      </div>
+      <form class="panel" id="regForm" novalidate>
+        <fieldset class="mods">
+          <legend>Modalidade</legend>
+          <label class="mod"><input type="radio" name="mod" value="cadeira" checked><svg aria-hidden="true"><use href="#i-cadeira"/></svg><span>Cadeira de rodas</span></label>
+          <label class="mod"><input type="radio" name="mod" value="handbike"><svg aria-hidden="true"><use href="#i-handbike"/></svg><span>Handbike</span></label>
+          <label class="mod"><input type="radio" name="mod" value="protese"><svg aria-hidden="true"><use href="#i-protese"/></svg><span>Corrida com prótese</span></label>
+          <label class="mod"><input type="radio" name="mod" value="guia"><svg aria-hidden="true"><use href="#i-guia"/></svg><span>Corrida com guia</span></label>
+          <label class="mod"><input type="radio" name="mod" value="adaptada"><svg aria-hidden="true"><use href="#i-adaptada"/></svg><span>Caminhada ou corrida adaptada</span></label>
+        </fieldset>
+        <div class="row2">
+          <div class="field"><label for="dist">Distância (km)</label><input id="dist" name="dist" inputmode="decimal" autocomplete="off" value="5,2" aria-describedby="distHelp"><small id="distHelp">Use vírgula: 5,2</small></div>
+          <div class="field"><label for="tempo">Tempo (h:mm:ss)</label><input id="tempo" name="tempo" inputmode="numeric" autocomplete="off" value="0:24:10" aria-describedby="tempoHelp"><small id="tempoHelp">Ou use o cronômetro</small></div>
+        </div>
+        <div class="timer" role="group" aria-label="Cronômetro e GPS">
+          <output id="tmOut" aria-live="off">0:00</output>
+          <button type="button" class="mini" id="tmStart">Iniciar</button>
+          <button type="button" class="mini ghost" id="tmReset">Zerar</button>
+          <button type="button" class="mini ghost" id="gpsBtn" aria-pressed="false">Medir com GPS</button>
+        </div>
+        <div class="field">
+          <label for="esforco">Esforço percebido: <b id="esfOut">6, moderado</b></label>
+          <input type="range" id="esforco" min="1" max="10" value="6" aria-valuetext="6, moderado">
+        </div>
+        <div class="row2">
+          <div class="field"><label for="rotaSel">Rota</label><select id="rotaSel"></select></div>
+          <div class="field"><label for="nome">Seu nome no feed</label><input id="nome" maxlength="40" autocomplete="given-name" placeholder="Ex.: Ana"></div>
+        </div>
+        <label class="check"><input type="checkbox" id="voz"><span>Avisos por voz durante o treino (tempo e ritmo)</span></label>
+        <p class="err" id="regErr" role="alert"></p>
+        <button class="btn blue" type="submit">Salvar atividade</button>
+      </form>
+    </div>
+
+    <div class="feed-head">
+      <h3>Atividades da comunidade</h3>
+      <span class="tag" id="modeTag">Modo demonstração</span>
+    </div>
+    <ol class="feed" id="feed"></ol>
+    <p class="note">Os treinos marcados como “exemplo” são dados de demonstração.</p>
+  </div>
+</section>
+
+<section class="band tint" id="rotas" aria-labelledby="rotTitle">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><h2 id="rotTitle">Rotas acessíveis</h2><p>Filtre pelo que importa para você. Piso, inclinação e estrutura são avaliados por quem usa.</p></div>
+      <button class="read" type="button" data-read="#rotas"><svg aria-hidden="true"><use href="#i-som"/></svg>Ouvir esta seção</button>
+    </div>
+    <div class="chips" role="group" aria-label="Filtros de acessibilidade">
+      <button type="button" class="chip" data-f="semDegrau" aria-pressed="false">Sem degraus</button>
+      <button type="button" class="chip" data-f="pisoLiso" aria-pressed="false">Piso liso</button>
+      <button type="button" class="chip" data-f="leve" aria-pressed="false">Inclinação até 3%</button>
+      <button type="button" class="chip" data-f="banheiro" aria-pressed="false">Banheiro acessível</button>
+      <button type="button" class="chip" data-f="luz" aria-pressed="false">Iluminação</button>
+      <button type="button" class="chip" data-f="sombra" aria-pressed="false">Sombra</button>
+    </div>
+    <p class="count" id="rotaCount" aria-live="polite"></p>
+    <ul class="routes" id="routes"></ul>
+    <p class="note">Rotas de exemplo para demonstrar o protótipo.</p>
+  </div>
+</section>
+
+<section class="band" id="provas" aria-labelledby="provTitle">
+  <div class="wrap">
+    <div class="sec-head">
+      <div><h2 id="provTitle">Provas com categoria PCD</h2><p>Calendário com as categorias de cada prova, largada adaptada e regras para atletas com guia.</p></div>
+      <div class="field inline"><label for="catSel">Categoria</label>
+        <select id="catSel"><option value="">Todas</option><option>Cadeirante</option><option>DV com guia</option><option>Amputados</option><option>DI</option></select>
+      </div>
+    </div>
+    <ol class="events" id="events"></ol>
+    <p class="note">Provas de exemplo para demonstrar o protótipo.</p>
+    <h3 class="sub">Provas reais que já abriram espaço para atletas PCD</h3>
+    <ul class="real">
+      <li><b>Corrida Rústica PCD</b><span>Belo Horizonte (MG), organizada pela prefeitura. Edição com 1,2 mil atletas.</span><a href="https://prefeitura.pbh.gov.br/noticias/corrida-rustica-pcd-tera-12-mil-atletas-celebrando-inclusao-superacao-e-cidadania-neste">Ver notícia</a></li>
+      <li><b>Inclusão a Toda Prova</b><span>São Paulo (SP), do Instituto Olga Kos. Corrida e caminhada pela inclusão, chegando à 10ª edição.</span><a href="https://maquinadoesporte.com.br/running/corridas-de-rua-se-consolidam-como-espacos-de-inclusao/">Ver notícia</a></li>
+      <li><b>Meia Maratona da Amazônia</b><span>Belém (PA). Categorias para cadeirantes (5 e 10 km), deficiência visual com guia e deficiência física ou intelectual.</span><a href="https://abcdoabc.com.br/meia-maratona-da-amazonia-atletas-com-deficiencia/">Ver notícia</a></li>
+    </ul>
+  </div>
+</section>
+
+<section class="band tint" id="guias" aria-labelledby="guiaTitle">
+  <div class="wrap two">
+    <div>
+      <div class="sec-head solo"><div><h2 id="guiaTitle">Encontre um guia</h2><p>Atletas cegos ou com baixa visão correm ligados a um guia por uma cordinha. O AcessRun conecta quem precisa com quem quer guiar.</p></div></div>
+      <ul class="guides" id="guidesList"></ul>
+      <p class="note">Guias de exemplo para demonstrar o protótipo.</p>
+    </div>
+    <form class="panel" id="guiaForm" novalidate>
+      <fieldset class="seg-radio">
+        <legend>Eu quero</legend>
+        <label><input type="radio" name="tipo" value="preciso" checked><span>Encontrar um guia</span></label>
+        <label><input type="radio" name="tipo" value="guia"><span>Ser guia voluntário</span></label>
+      </fieldset>
+      <div class="field"><label for="gNome">Primeiro nome <span class="req">(obrigatório)</span></label><input id="gNome" autocomplete="given-name" maxlength="40" aria-describedby="gNomeErr"><small class="ferr" id="gNomeErr"></small></div>
+      <div class="field"><label for="gCidade">Cidade <span class="req">(obrigatório)</span></label><input id="gCidade" autocomplete="address-level2" maxlength="60" aria-describedby="gCidadeErr"><small class="ferr" id="gCidadeErr"></small></div>
+      <div class="field"><label for="gRitmo">Ritmo aproximado</label>
+        <select id="gRitmo"><option>Caminhada (acima de 9 min/km)</option><option selected>Trote (7 a 9 min/km)</option><option>Corrida (5 a 7 min/km)</option><option>Rápido (abaixo de 5 min/km)</option></select>
+      </div>
+      <fieldset class="days"><legend>Dias que funcionam</legend>
+        <label><input type="checkbox" name="dia" value="seg-sex manhã">Semana, manhã</label>
+        <label><input type="checkbox" name="dia" value="seg-sex noite">Semana, noite</label>
+        <label><input type="checkbox" name="dia" value="sábado">Sábado</label>
+        <label><input type="checkbox" name="dia" value="domingo" checked>Domingo</label>
+      </fieldset>
+      <div class="field"><label for="gContato">WhatsApp ou e-mail para contato <span class="req">(obrigatório)</span></label><input id="gContato" autocomplete="email" maxlength="80" aria-describedby="gContatoErr"><small class="ferr" id="gContatoErr"></small></div>
+      <label class="check"><input type="checkbox" id="gLgpd" aria-describedby="gLgpdErr"><span>Concordo que o AcessRun use estes dados só para me colocar em contato com um guia ou atleta (LGPD).</span></label>
+      <small class="ferr" id="gLgpdErr"></small>
+      <button class="btn blue" type="submit">Enviar cadastro</button>
+      <p class="ok" id="guiaOk" role="status"></p>
+    </form>
+  </div>
+</section>
+
+<section class="band navy" id="comunidade" aria-labelledby="comTitle">
+  <div class="wrap">
+    <div class="sec-head"><div><h2 id="comTitle">Comunidade</h2><p>Clubes para treinar junto, desafios coletivos e aplausos em cada treino.</p></div></div>
+    <div class="challenge">
+      <div><h3>Desafio coletivo de dezembro</h3><p>Somar 100 km juntos, em qualquer modalidade.</p></div>
+      <div class="meter" role="progressbar" aria-label="Progresso do desafio" aria-valuemin="0" aria-valuemax="100" id="meter" aria-valuenow="0"><span id="meterFill"></span></div>
+      <p class="meter-l"><b id="meterKm">0</b> de 100 km</p>
+    </div>
+    <ul class="clubs" id="clubs"></ul>
+    <p class="note">Clubes de exemplo para demonstrar o protótipo.</p>
+  </div>
+</section>
+
+<section class="band" id="aprendizados" aria-labelledby="apTitle">
+  <div class="wrap">
+    <div class="sec-head"><div><h2 id="apTitle">O que aprendemos com os grandes apps</h2><p>Estudamos o Strava, o Nike Run Club e o adidas Running. Cada um faz algo muito bem, e nenhum foi pensado primeiro para o atleta PCD.</p></div></div>
+    <div class="apps">
+      <article class="app">
+        <h3>Strava</h3>
+        <p><b>Faz bem:</b> rede social do esporte, com kudos, clubes, desafios e segmentos. Tem modos para cadeira de rodas e handbike, criados em 2017 com atletas da Challenged Athletes Foundation.</p>
+        <p><b>Lição para o AcessRun:</b> a versão web já foi criticada por falhas de navegação por teclado. Acessibilidade precisa valer no app e no site.</p>
+      </article>
+      <article class="app">
+        <h3>Nike Run Club</h3>
+        <p><b>Faz bem:</b> cerca de 300 corridas guiadas por áudio e seis planos de treino gratuitos, em 11 idiomas, além de compartilhar a localização ao vivo com a família.</p>
+        <p><b>Lição para o AcessRun:</b> treino guiado por voz é ótimo para quem é cego ou tem baixa visão. Aqui ele vem com aviso de tempo e ritmo.</p>
+      </article>
+      <article class="app">
+        <h3>adidas Running</h3>
+        <p><b>Faz bem:</b> mais de 90 esportes, comunidades locais adidas Runners, planos que se adaptam ao progresso no Premium e pontos no adiClub.</p>
+        <p><b>Lição para o AcessRun:</b> na App Store, a desenvolvedora ainda não informa quais recursos de acessibilidade o app tem. Aqui isso é público.</p>
+      </article>
+    </div>
+    <p class="src">Fontes: suporte e notícias do Strava, Challenged Athletes Foundation, Cyclocosm (2021), Nike Newsroom (nov. 2024), App Store (adidas Running).</p>
+  </div>
+</section>
+
+<section class="band tint" id="acessibilidade" aria-labelledby="acTitle">
+  <div class="wrap two">
+    <div>
+      <h2 id="acTitle">Acessibilidade do AcessRun</h2>
+      <p>O site segue as diretrizes WCAG 2.2, nível AA, e a Lei Brasileira de Inclusão (Lei 13.146/2015), que pede sites acessíveis no Brasil.</p>
+      <ul class="ticks">
+        <li>Navegação completa pelo teclado, com foco sempre visível</li>
+        <li>Funciona com leitores de tela: NVDA, VoiceOver e TalkBack</li>
+        <li>Texto ampliado até 150% sem quebrar a página</li>
+        <li>Alto contraste e leitura facilitada para dislexia</li>
+        <li>Leitura em voz alta e avisos falados no treino</li>
+        <li>Tradução para Libras com o VLibras</li>
+        <li>Animações desligadas quando o sistema pede menos movimento</li>
+      </ul>
+    </div>
+    <div class="panel keys">
+      <h3>Atalhos de teclado</h3>
+      <table>
+        <thead><tr><th scope="col">Tecla</th><th scope="col">Ação</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>Tab</kbd></td><td>Vai para o próximo link, botão ou campo</td></tr>
+          <tr><td><kbd>Alt</kbd> + <kbd>A</kbd></td><td>Abre os ajustes de acessibilidade</td></tr>
+          <tr><td><kbd>Alt</kbd> + <kbd>R</kbd></td><td>Vai direto para registrar atividade</td></tr>
+          <tr><td><kbd>Esc</kbd></td><td>Fecha janelas e o painel de ajustes</td></tr>
+          <tr><td><kbd>Espaço</kbd></td><td>Marca opções e aperta botões</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="band cta-band" aria-labelledby="ctaTitle">
+  <div class="wrap cta-in">
+    <h2 id="ctaTitle">Seu próximo treino conta. Registre.</h2>
+    <a class="btn yel" href="#registrar">Registrar atividade</a>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <img src="assets/logo-branco.png" alt="AcessRun" width="120" height="90">
+    <nav aria-label="Rodapé" class="foot-nav"><a href="#registrar">Registrar</a><a href="#rotas">Rotas</a><a href="#provas">Provas</a><a href="#guias">Guias</a><a href="#acessibilidade">Acessibilidade</a></nav>
+    <p>Projeto acadêmico AcessRun · site e aplicativo para incluir pessoas com deficiência na corrida.<br>Código aberto: <a href="https://github.com/gugaftv01/ACESSRUN">github.com/gugaftv01/ACESSRUN</a></p>
+  </div>
+</footer>
+
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <div class="dlg-head"><h2 id="dlgTitle">Detalhes</h2><button type="button" class="x" id="dlgClose" aria-label="Fechar janela">×</button></div>
+  <div id="dlgBody"></div>
+</dialog>
+
+<div class="sr" id="live" aria-live="polite"></div>
+<script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,47 @@
+rules_version = '2';
+// Regras do Firestore para o AcessRun.
+// Feed e avaliações são públicos para leitura; cadastros de guia ficam privados (só no console).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /atividades/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['nome','modalidade','distanciaKm','tempoSeg','esforco','rota','aplausos','criadoEm'])
+        && request.resource.data.nome is string && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 40
+        && request.resource.data.modalidade in ['cadeira','handbike','protese','guia','adaptada']
+        && request.resource.data.distanciaKm is number && request.resource.data.distanciaKm > 0 && request.resource.data.distanciaKm <= 300
+        && request.resource.data.tempoSeg is int && request.resource.data.tempoSeg > 0 && request.resource.data.tempoSeg <= 86400
+        && request.resource.data.esforco is int && request.resource.data.esforco >= 1 && request.resource.data.esforco <= 10
+        && request.resource.data.rota is string && request.resource.data.rota.size() <= 20
+        && request.resource.data.aplausos == 0
+        && request.resource.data.criadoEm == request.time;
+      // só deixa somar 1 aplauso por vez
+      allow update: if request.resource.data.diff(resource.data).affectedKeys().hasOnly(['aplausos'])
+        && request.resource.data.aplausos == resource.data.aplausos + 1;
+      allow delete: if false;
+    }
+
+    match /avaliacoesRotas/{id} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['rotaId','nota','itens','criadoEm'])
+        && request.resource.data.rotaId is string && request.resource.data.rotaId.size() <= 20
+        && request.resource.data.nota is int && request.resource.data.nota >= 1 && request.resource.data.nota <= 5
+        && request.resource.data.itens is list && request.resource.data.itens.size() <= 10
+        && request.resource.data.criadoEm == request.time;
+      allow update, delete: if false;
+    }
+
+    // Contatos de atletas e guias: ninguém lê pelo site. A equipe vê no Console do Firebase.
+    match /cadastrosGuia/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['tipo','nome','cidade','ritmo','dias','contato','consentimento','criadoEm'])
+        && request.resource.data.tipo in ['preciso','guia']
+        && request.resource.data.nome is string && request.resource.data.nome.size() >= 2 && request.resource.data.nome.size() <= 40
+        && request.resource.data.cidade is string && request.resource.data.cidade.size() <= 60
+        && request.resource.data.contato is string && request.resource.data.contato.size() <= 80
+        && request.resource.data.dias is list && request.resource.data.dias.size() <= 7
+        && request.resource.data.consentimento == true
+        && request.resource.data.criadoEm == request.time;
+      allow read, update, delete: if false;
+    }
+  }
+}
